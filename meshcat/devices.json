@@ -1,0 +1,18 @@
+[
+    {
+        "pio_env": "rak4631",
+        "arch": "nrf52",
+        "requires_dfu": true,
+        "manufacturer": ["RAKWireless", "Microsoft"],
+        "vid": [9114],
+        "pid": [32809]
+    },
+    {
+        "pio_env": "heltec_v3",
+        "arch": "esp32",
+        "requires_dfu": false,
+        "manufacturer": ["Silicon Labs"],
+        "vid": [4292],
+        "pid": [60000]
+    }
+]
