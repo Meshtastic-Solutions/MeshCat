@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "meshcat"
+version = "0.1.0"
+description = "Meshtastic serial device discovery gateway service built around socat"
+authors = ["Ben Meadors <benmmeadors@gmail.com>"]
+license = "GNU GPLv3"
+readme = "README.md"
+
+[tool.poetry.scripts]
+start = "meshcat.main:start"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+fastapi = "^0.115.1"
+pyserial = "^3.5"
+meshtastic = "^2.5.1"
+colorama = "^0.4.6"
+uvicorn = "^0.31.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
