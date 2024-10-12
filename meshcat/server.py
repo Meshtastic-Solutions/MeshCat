@@ -1,9 +1,8 @@
-import subprocess
 import uvicorn
 from fastapi import FastAPI
 import serial
 import serial.tools.list_ports
-from .utils import get_devices_from_json, get_open_tcp_port, enter_dfu_mode, ports_started
+from .utils import get_devices_from_json, get_open_tcp_port, enter_dfu_mode, ports_started, start_socat_server, stop_socat
 
 devices_from_json = get_devices_from_json()
 
@@ -16,13 +15,11 @@ def find_device(vid, pid, manufacturer):
             return device
     return None
 
-
 app = FastAPI()
 
 @app.get("/")
 def get_device_list():
     ports = serial.tools.list_ports.comports()
-
     ports = list(map(lambda port: {
         "pio_env": find_device(port.vid, port.pid, port.manufacturer).get("pio_env"),
         "arch": find_device(port.vid, port.pid, port.manufacturer).get("arch"),
@@ -33,9 +30,10 @@ def get_device_list():
     }, ports))
     return ports
 
-@app.post("/start")
+@app.post("/connect")
 def start_device(port):
-    return { "message": "Device started", "tcp_port": start_socat_server(port) }
+    tcp_port = start_socat_server(port)
+    return { "message": "Device started", "tcp_port": tcp_port }
 
 @app.post("/stop")
 def stop_device(port):

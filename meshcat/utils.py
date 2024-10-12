@@ -19,7 +19,7 @@ def get_devices_from_json():
 
 def get_open_tcp_port():
     while True:
-        port = random.randint(1024, 65535)
+        port = random.randint(3000, 65535)
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             if s.connect_ex(('localhost', port)) != 0:
                 return port
@@ -29,6 +29,10 @@ def start_socat_server(port):
     ports_started.append({port: tcp_port})
     #subprocess.Popen(["socat", "-d", "-d", f"pty,raw,echo=0,link={port},b115200", f"tcp-listen:{tcp_port},reuseaddr,fork"])
     return tcp_port
+
+def start_socat_client(port, host, tcp_port):
+    subprocess.Popen(["socat", f"pty,raw,echo=0,link={port},b115200", f"tcp:{host}:{tcp_port}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    pass
 
 def stop_socat(port):
     for port_started in ports_started:
