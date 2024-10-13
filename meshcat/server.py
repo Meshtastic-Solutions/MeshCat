@@ -28,7 +28,7 @@ def get_device_list():
         "tcp_port": next((tcp_port for port_started in ports_started if port.device in port_started for tcp_port in port_started.values()), None),
         "port": port
     }, ports))
-    return ports.filter(lambda port: port["pio_env"] is not None)
+    return [port for port in ports if port["pio_env"] is not None]
 
 @app.post("/connect")
 def start_device(port):
