@@ -27,8 +27,8 @@ def get_open_tcp_port():
 def start_socat_server(port):
     tcp_port = get_open_tcp_port()
     ports_started.append({port: tcp_port})
-    subprocess.Popen(["socat", "-d", "-d", f"pty,file:{port},nonblock,raw,echo=0,b115200", f"tcp-listen:{tcp_port},reuseaddr,fork"])
-    print(f"Started: socat pty,file:{port},nonblock,raw,echo=0,b115200 tcp-listen:{tcp_port},reuseaddr,fork")
+    subprocess.Popen(["socat", "-d", "-d", f"tcp-listen:{tcp_port},reuseaddr,fork", f"file:{port},nonblock,raw,echo=0,b115200"])
+    print(f"Started: socat file:{port},nonblock,raw,echo=0,b115200 tcp-listen:{tcp_port},reuseaddr,fork")
     return tcp_port
 
 def start_socat_client(host, tcp_port):
