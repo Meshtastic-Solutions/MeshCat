@@ -8,9 +8,9 @@ devices_from_json = get_devices_from_json()
 
 def find_device(vid, pid, manufacturer):
     for device in devices_from_json:
-        matchesVid = not device["vid"] or vid in device["vid"]
-        matchesPid = not device["pid"] or pid in device["pid"]
-        matchesManufacturer = not device["manufacturer"] or manufacturer in device["manufacturer"]
+        matchesVid = device["vid"] is None or vid in device["vid"]
+        matchesPid = device["pid"] is None or pid in device["pid"]
+        matchesManufacturer = device["manufacturer"] is None or manufacturer.lower() in device["manufacturer"]
         if matchesVid and matchesPid and matchesManufacturer:
             return device
     return None
@@ -28,7 +28,7 @@ def get_device_list():
         "tcp_port": next((tcp_port for port_started in ports_started if port.device in port_started for tcp_port in port_started.values()), None),
         "port": port
     }, ports))
-    return ports
+    return ports.filter(lambda port: port["pio_env"] is not None)
 
 @app.post("/connect")
 def start_device(port):

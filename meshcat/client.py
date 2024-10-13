@@ -6,15 +6,8 @@ import yaml
 
 app = typer.Typer()
 
-config = {}
-if os.path.exists("./client.yaml"):
-    with open("./client.yaml", "r") as file:
-        config = yaml.safe_load(file)
-else:
-    print("No client.yaml file found, defaulting to localhost:6900")
-
-MESHCAT_HOST = config.get("MESHCAT_HOST", "localhost")
-MESHCAT_PORT = config.get("MESHCAT_PORT", 6900)
+MESHCAT_HOST = os.environ.get("MESHCAT_HOST", "localhost")
+MESHCAT_PORT = os.environ.get("MESHCAT_PORT", 6900)
 
 SERVER_URL = f"http://{MESHCAT_HOST}:{MESHCAT_PORT}"
 
