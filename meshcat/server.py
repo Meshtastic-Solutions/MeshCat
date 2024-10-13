@@ -13,7 +13,7 @@ def find_device(vid, pid, manufacturer):
         matchesManufacturer = device["manufacturer"] is None or (manufacturer or "").lower() in device["manufacturer"]
         if matchesVid and matchesPid and matchesManufacturer:
             return device
-    return None
+    return {}
 
 app = FastAPI()
 
