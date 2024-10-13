@@ -10,7 +10,7 @@ def find_device(vid, pid, manufacturer):
     for device in devices_from_json:
         matchesVid = device["vid"] is None or vid in device["vid"]
         matchesPid = device["pid"] is None or pid in device["pid"]
-        matchesManufacturer = device["manufacturer"] is None or manufacturer.lower() in device["manufacturer"]
+        matchesManufacturer = device["manufacturer"] is None or (manufacturer or "").lower() in device["manufacturer"]
         if matchesVid and matchesPid and matchesManufacturer:
             return device
     return None
