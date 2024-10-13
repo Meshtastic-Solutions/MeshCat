@@ -1,3 +1,4 @@
+import json
 import os
 import typer
 import requests
@@ -15,7 +16,7 @@ SERVER_URL = f"http://{MESHCAT_HOST}:{MESHCAT_PORT}"
 def list():
     response = requests.get(f"{SERVER_URL}/")
     if response.status_code == 200:
-        print(response.json())
+        print(json.dumps(response.json(), indent=2))
     else:
         print(f"Failure status code: {response.status_code}")
 
@@ -24,10 +25,21 @@ def list():
 def connect(port: str):
     response = requests.post(f"{SERVER_URL}/connect?port={port}")
     if response.status_code == 200:
+        start_socat_client(MESHCAT_HOST, response.json()["tcp_port"])
         print(f"Device started on port {port}")
-        print(response.json())
+        print(json.dumps(response.json(), indent=2))
     else:
         print(f"Failure status code: {response.status_code}")
+
+@app.command()
+def reconnect(port: str):
+    response = requests.get(f"{SERVER_URL}")
+    if response.status_code == 200:
+        for devices in response.json():
+            if devices.get("port").get("device") == port:
+              start_socat_client(MESHCAT_HOST, devices.get("tcp_port"))
+
+    return { "message": f"Could not find running device {port}" }
 
 if __name__ == "__main__":
     app()

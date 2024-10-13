@@ -2,7 +2,10 @@ import uvicorn
 from fastapi import FastAPI
 import serial
 import serial.tools.list_ports
-from .utils import get_devices_from_json, get_open_tcp_port, enter_dfu_mode, ports_started, start_socat_server, stop_socat
+from .utils import get_devices_from_json, get_open_tcp_port, enter_dfu_mode, start_socat_server, stop_socat
+
+# Assuming ports_started is a global variable or needs to be defined
+ports_started = {}
 
 devices_from_json = get_devices_from_json()
 
