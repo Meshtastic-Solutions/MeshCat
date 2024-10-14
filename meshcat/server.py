@@ -19,7 +19,6 @@ class MeshCatProcessRunner:
     async def run_main(self):
         while True:
             await asyncio.sleep(0.2)
-            self.value += 1
             ports = list(map(lambda port: {
                 "pio_env": find_device(port.vid, port.pid, port.manufacturer).get("pio_env"),
                 "arch": find_device(port.vid, port.pid, port.manufacturer).get("arch"),
@@ -37,7 +36,7 @@ class MeshCatProcessRunner:
                 # Update the port with the new tcp_port and set is_running to True
                 port["tcp_port"] = tcp_port
                 port["is_running"] = True
-            return ports
+            self.value = ports
 
 runner = MeshCatProcessRunner()
 
