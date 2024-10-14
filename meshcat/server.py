@@ -1,5 +1,5 @@
 import asyncio
-from fastapi.concurrency import asynccontextmanager
+from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 import serial
