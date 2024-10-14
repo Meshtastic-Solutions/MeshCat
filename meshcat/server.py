@@ -44,9 +44,10 @@ class MeshCatProcessRunner:
         for port in ports:
             if port["is_running"]:
                 continue
-            tcp_port = start_socat_server(port)
-            ports_started.append({port: tcp_port})
-                # Update the port with the new tcp_port and set is_running to True
+            remote_serial_port = port["port"].device
+            tcp_port = start_socat_server(remote_serial_port)
+            ports_started.append({remote_serial_port: tcp_port})
+            # Update the port with the new tcp_port and set is_running to True
             port["tcp_port"] = tcp_port
             port["is_running"] = True
         return ports
