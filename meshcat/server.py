@@ -43,7 +43,7 @@ class MeshCatProcessRunner:
             }, serial.tools.list_ports.comports()))
         ports = [port for port in ports if port["pio_env"] is not None]
         for port in ports:
-            if port.is_running:
+            if port["is_running"]:
                 continue
             remote_serial_port = port.port.device
             tcp_port = start_socat_server(remote_serial_port)
