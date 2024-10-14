@@ -17,6 +17,8 @@ def find_device(vid, pid, manufacturer):
         matchesVid = device["vid"] is None or vid in device["vid"]
         matchesPid = device["pid"] is None or pid in device["pid"]
         matchesManufacturer = device["manufacturer"] is None or (manufacturer or "").lower() in device["manufacturer"]
+        print(f"matchesVid: {matchesVid}, matchesPid: {matchesPid}, matchesManufacturer: {matchesManufacturer}")
+        print (f"device: {device}")
         if matchesVid and matchesPid and matchesManufacturer:
             return device
     return {}
