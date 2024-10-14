@@ -20,6 +20,14 @@ def list():
         print(f"Failure status code: {response.status_code}")
 
 @app.command()
+def ports():
+    response = requests.get(f"{SERVER_URL}/ports")
+    if response.status_code == 200:
+        print(json.dumps(response.json(), indent=2))
+    else:
+        print(f"Failure status code: {response.status_code}")
+
+@app.command()
 def connect(port: str):
     response = requests.post(f"{SERVER_URL}/connect?port={port}")
     if response.status_code == 200:

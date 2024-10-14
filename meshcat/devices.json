@@ -11,7 +11,7 @@
         "pio_env": "heltec_v3",
         "arch": "esp32",
         "requires_dfu": false,
-        "manufacturer": ["silicon_labs"],
+        "manufacturer": ["silicon_labs", "silicon labs"],
         "vid": [4292],
         "pid": [60000]
     }

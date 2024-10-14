@@ -44,8 +44,6 @@ class MeshCatProcessRunner:
         ports = [port for port in ports if port["pio_env"] is not None]
         for port in ports:
             remote_serial_port = port["port"].device
-            print(f"remote_serial_port: {remote_serial_port}")
-            print(f"ports_started: {ports_started}")
             if any(remote_serial_port in port_started for port_started in ports_started):
                 continue
 
