@@ -17,21 +17,21 @@ def find_device(vid, pid, manufacturer):
         matchesVid = device["vid"] is None or vid in device["vid"]
         matchesPid = device["pid"] is None or pid in device["pid"]
         matchesManufacturer = device["manufacturer"] is None or (manufacturer or "").lower() in device["manufacturer"]
-        print(f"matchesVid: {matchesVid}, matchesPid: {matchesPid}, matchesManufacturer: {matchesManufacturer}")
-        print (f"device: {device}")
+        # print(f"matchesVid: {matchesVid}, matchesPid: {matchesPid}, matchesManufacturer: {matchesManufacturer}")
+        # print (f"device: {device}")
         if matchesVid and matchesPid and matchesManufacturer:
             return device
     return {}
 
 class MeshCatProcessRunner:
     def __init__(self):
+        print(serial.tools.list_ports.comports())
         self.value = self.find_and_start_ports()
 
     async def run_main(self):
         while True:
             await asyncio.sleep(0.2)
             self.value = self.find_and_start_ports()
-            print(serial.tools.list_ports.comports())
 
     def find_and_start_ports(self):
         ports = list(map(lambda port: {
@@ -63,7 +63,7 @@ async def lifespan(app: FastAPI):
     task.cancel()
     stop_socat()
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 def get_device_list():
