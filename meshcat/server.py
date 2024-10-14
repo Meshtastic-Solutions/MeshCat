@@ -74,6 +74,7 @@ def get_device_list():
 def get_serial_ports_raw():
     return serial.tools.list_ports.comports()
 
+# Probably should deprecated this endpoint
 @app.post("/connect")
 def start_connect(port):
     tcp_port = start_socat_server(port)
