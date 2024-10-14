@@ -28,8 +28,7 @@ class MeshCatProcessRunner:
     async def run_main(self):
         while True:
             await asyncio.sleep(0.2)
-            ports = self.find_and_start_ports()
-            self.value = ports
+            self.value = self.find_and_start_ports()
 
     def find_and_start_ports(self):
         ports = list(map(lambda port: {
@@ -66,16 +65,6 @@ app = FastAPI()
 @app.get("/")
 def get_device_list():
     return runner.value
-    # ports = serial.tools.list_ports.comports()
-    # ports = list(map(lambda port: {
-    #     "pio_env": find_device(port.vid, port.pid, port.manufacturer).get("pio_env"),
-    #     "arch": find_device(port.vid, port.pid, port.manufacturer).get("arch"),
-    #     "requires_dfu": find_device(port.vid, port.pid, port.manufacturer).get("requires_dfu"),
-    #     "is_running": port.device in ports_started,
-    #     "tcp_port": next((tcp_port for port_started in ports_started if port.device in port_started for tcp_port in port_started.values()), None),
-    #     "port": port
-    # }, ports))
-    # return [port for port in ports if port["pio_env"] is not None]
 
 @app.post("/connect")
 def start_connect(port):
