@@ -25,12 +25,11 @@ def find_device(vid, pid, manufacturer):
 
 class MeshCatProcessRunner:
     def __init__(self):
-        print(serial.tools.list_ports.comports())
         self.value = self.find_and_start_ports()
 
     async def run_main(self):
         while True:
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(0.3)
             self.value = self.find_and_start_ports()
 
     def find_and_start_ports(self):
@@ -44,14 +43,15 @@ class MeshCatProcessRunner:
             }, serial.tools.list_ports.comports()))
         ports = [port for port in ports if port["pio_env"] is not None]
         for port in ports:
-            if port["is_running"]:
+            if port.is_running:
                 continue
-            remote_serial_port = port["port"].device
+            remote_serial_port = port.port.device
             tcp_port = start_socat_server(remote_serial_port)
             ports_started.append({remote_serial_port: tcp_port})
             # Update the port with the new tcp_port and set is_running to True
-            port["tcp_port"] = tcp_port
-            port["is_running"] = True
+            port.tcp_port = tcp_port
+            port.virtual_port = f"/dev/meshcat{tcp_port}"
+            port.is_running = True
         return ports
 
 runner = MeshCatProcessRunner()
@@ -68,6 +68,10 @@ app = FastAPI(lifespan=lifespan)
 @app.get("/")
 def get_device_list():
     return runner.value
+
+@app.get("/ports")
+def get_serial_ports_raw():
+    return serial.tools.list_ports.comports()
 
 @app.post("/connect")
 def start_connect(port):
