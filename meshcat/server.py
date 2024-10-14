@@ -14,12 +14,16 @@ devices_from_json = get_devices_from_json()
 
 class MeshCatProcessRunner:
     def __init__(self):
-        self.value = 0
+        self.value = self.find_and_start_ports()
 
     async def run_main(self):
         while True:
             await asyncio.sleep(0.2)
-            ports = list(map(lambda port: {
+            ports = self.find_and_start_ports()
+            self.value = ports
+
+    def find_and_start_ports(self):
+        ports = list(map(lambda port: {
                 "pio_env": find_device(port.vid, port.pid, port.manufacturer).get("pio_env"),
                 "arch": find_device(port.vid, port.pid, port.manufacturer).get("arch"),
                 "requires_dfu": find_device(port.vid, port.pid, port.manufacturer).get("requires_dfu"),
@@ -27,16 +31,16 @@ class MeshCatProcessRunner:
                 "tcp_port": next((tcp_port for port_started in ports_started if port.device in port_started for tcp_port in port_started.values()), None),
                 "port": port
             }, serial.tools.list_ports.comports()))
-            ports = [port for port in ports if port["pio_env"] is not None]
-            for port in ports:
-                if port["is_running"]:
-                    continue
-                tcp_port = start_socat_server(port)
-                ports_started.append({port: tcp_port})
+        ports = [port for port in ports if port["pio_env"] is not None]
+        for port in ports:
+            if port["is_running"]:
+                continue
+            tcp_port = start_socat_server(port)
+            ports_started.append({port: tcp_port})
                 # Update the port with the new tcp_port and set is_running to True
-                port["tcp_port"] = tcp_port
-                port["is_running"] = True
-            self.value = ports
+            port["tcp_port"] = tcp_port
+            port["is_running"] = True
+        return ports
 
 runner = MeshCatProcessRunner()
 
