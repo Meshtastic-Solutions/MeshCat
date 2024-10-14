@@ -37,15 +37,16 @@ class MeshCatProcessRunner:
                 "pio_env": find_device(port.vid, port.pid, port.manufacturer).get("pio_env"),
                 "arch": find_device(port.vid, port.pid, port.manufacturer).get("arch"),
                 "requires_dfu": find_device(port.vid, port.pid, port.manufacturer).get("requires_dfu"),
-                "is_running": port.device in ports_started,
+                "is_running": port.device in ports_started.keys(),
                 "tcp_port": next((tcp_port for port_started in ports_started if port.device in port_started for tcp_port in port_started.values()), None),
                 "port": port
             }, serial.tools.list_ports.comports()))
         ports = [port for port in ports if port["pio_env"] is not None]
         for port in ports:
-            if port["is_running"]:
-                continue
             remote_serial_port = port["port"].device
+            if remote_serial_port in ports_started.keys():
+                continue
+
             tcp_port = start_socat_server(remote_serial_port)
             ports_started.append({remote_serial_port: tcp_port})
             # Update the port with the new tcp_port and set is_running to True
