@@ -12,6 +12,15 @@ ports_started = []
 
 devices_from_json = get_devices_from_json()
 
+def find_device(vid, pid, manufacturer):
+    for device in devices_from_json:
+        matchesVid = device["vid"] is None or vid in device["vid"]
+        matchesPid = device["pid"] is None or pid in device["pid"]
+        matchesManufacturer = device["manufacturer"] is None or (manufacturer or "").lower() in device["manufacturer"]
+        if matchesVid and matchesPid and matchesManufacturer:
+            return device
+    return {}
+
 class MeshCatProcessRunner:
     def __init__(self):
         self.value = self.find_and_start_ports()
@@ -50,15 +59,6 @@ async def lifespan(app: FastAPI):
     yield
     task.cancel()
     stop_socat()
-
-def find_device(vid, pid, manufacturer):
-    for device in devices_from_json:
-        matchesVid = device["vid"] is None or vid in device["vid"]
-        matchesPid = device["pid"] is None or pid in device["pid"]
-        matchesManufacturer = device["manufacturer"] is None or (manufacturer or "").lower() in device["manufacturer"]
-        if matchesVid and matchesPid and matchesManufacturer:
-            return device
-    return {}
 
 app = FastAPI()
 
