@@ -31,6 +31,7 @@ class MeshCatProcessRunner:
         while True:
             await asyncio.sleep(0.2)
             self.value = self.find_and_start_ports()
+            print(serial.tools.list_ports.comports())
 
     def find_and_start_ports(self):
         ports = list(map(lambda port: {
