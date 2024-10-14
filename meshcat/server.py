@@ -51,7 +51,7 @@ class MeshCatProcessRunner:
             # Update the port with the new tcp_port and set is_running to True
             port["tcp_port"] = tcp_port
             port["virtual_port"] = f"/dev/meshcat{tcp_port}"
-            port["virtual_port"] = True
+            port["is_running"] = True
         return ports
 
 runner = MeshCatProcessRunner()
