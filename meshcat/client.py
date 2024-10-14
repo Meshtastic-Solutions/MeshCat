@@ -2,8 +2,7 @@ import json
 import os
 import typer
 import requests
-from .utils import start_socat_client, stop_socat
-import yaml
+from .socat import start_socat_client, stop_socat
 
 app = typer.Typer()
 
@@ -19,7 +18,6 @@ def list():
         print(json.dumps(response.json(), indent=2))
     else:
         print(f"Failure status code: {response.status_code}")
-
 
 @app.command()
 def connect(port: str):
@@ -40,6 +38,16 @@ def reconnect(port: str):
               start_socat_client(MESHCAT_HOST, devices.get("tcp_port"))
 
     return { "message": f"Could not find running device {port}" }
+
+@app.command()
+def stop(port: str):
+    response = requests.post(f"{SERVER_URL}/stop?port={port}")
+    if response.status_code == 200:
+        stop_socat()
+        print(f"Device stopped on port {port}")
+        print(json.dumps(response.json(), indent=2))
+    else:
+        print(f"Failure status code: {response.status_code}")
 
 if __name__ == "__main__":
     app()

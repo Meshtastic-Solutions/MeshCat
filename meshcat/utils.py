@@ -1,9 +1,5 @@
 import os
 import json
-import random
-import socket
-import random
-import subprocess
 import time
 
 import serial
@@ -16,36 +12,6 @@ def get_devices_from_json():
         with open(json_file_path, 'r') as file:
             return json.load(file)
     return []
-
-def get_open_tcp_port():
-    while True:
-        port = random.randint(3000, 65535)
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            if s.connect_ex(('localhost', port)) != 0:
-                return port
-            
-def start_socat_server(port):
-    tcp_port = get_open_tcp_port()
-    ports_started.append({port: tcp_port})
-    subprocess.Popen(["socat", "-d", "-d", f"tcp-listen:{tcp_port},reuseaddr,fork", f"file:{port},nonblock,raw,echo=0,b115200"])
-    print(f"Started: socat file:{port},nonblock,raw,echo=0,b115200 tcp-listen:{tcp_port},reuseaddr,fork")
-    return tcp_port
-
-def start_socat_client(host, tcp_port):
-    process = subprocess.Popen(["socat", f"tcp:{host}:{tcp_port}", f"pty,link=/dev/meshcat{tcp_port},raw,echo=0,group-late=dialout,mode=777"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-#
-    print(f"Started: socat tcp:{host}:{tcp_port} pty,link=/dev/meshcat{tcp_port},raw,group-late=dialout,mode=777")
-    stdout, stderr = process.communicate()
-    print(f"stdout: {stdout.decode()}")
-    print(f"stderr: {stderr.decode()}")
-    #subprocess.Popen(["socat", f"pty,raw,echo=0,link={port},b115200", f"tcp:{host}:{tcp_port}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    pass
-
-def stop_socat(port):
-    for port_started in ports_started:
-        if port in port_started:
-            subprocess.Popen(["killall", "socat"])
-            ports_started.remove(port_started)
 
 def enter_dfu_mode(port):
     try:
