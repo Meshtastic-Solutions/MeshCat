@@ -91,7 +91,7 @@ def start_connect(port: str):
 @app.post("/update")
 def flash_device(port: str, upload_file: UploadFile = File(...)):
     ports = runner.value
-    found_device = next((port for port in ports if port["port"].device == port), None)
+    found_device = next((p for p in ports if p["port"].device == port), None)
     app.ports_flashing.append(port)
     firmware_path = f"/tmp/{upload_file.filename}"
     write_temp_file(upload_file.file.read(), firmware_path)
