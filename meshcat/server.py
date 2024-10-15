@@ -89,7 +89,7 @@ def start_connect(port: str):
     ports_running.append({port: tcp_port})
     return { "message": "Device started", "tcp_port": tcp_port }
 
-@app.post("/flash")
+@app.post("/update")
 def flash_device(port: str, firmware_file: UploadFile = File(...)):
     device = find_device(port.vid, port.pid, port.manufacturer)
     ports_flashing.append(port)
