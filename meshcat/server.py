@@ -91,13 +91,14 @@ def start_connect(port: str):
 
 @app.post("/update")
 def flash_device(port: str, upload_file: UploadFile = File(...)):
-    device = find_device(port.vid, port.pid, port.manufacturer)
+    ports = runner.value
+    found_device = next((port for port in ports if port["port"].device == port), None)
     ports_flashing.append(port)
     firmware_path = f"/tmp/{upload_file.filename}"
     write_temp_file(upload_file.file.read(), firmware_path)
-    if device.get("arch") == "nrf52840":
+    if found_device.get("arch") == "nrf52840":
         update_firmware_nrf52840(port.device, firmware_path)
-    elif device.get("arch") == "esp32":
+    elif found_device.get("arch") == "esp32":
         update_firmware_esp32(port.device, firmware_path)
     # Remove the port from the flashing list
     ports_flashing = [port_started for port_started in ports_flashing if port not in port_started]

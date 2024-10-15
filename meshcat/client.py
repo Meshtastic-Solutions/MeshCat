@@ -39,8 +39,9 @@ def connect(port: str):
 
 @app.command()
 def update(port: str, firmware_path: str):
-    with open(firmware_path, 'rb') as firmware_file:
-        files = {'firmware': firmware_file}
+    with open(firmware_path, 'rb') as file:
+        files = {'upload_file': file}
+        print(f"Updating device {port} with firmware {firmware_path}")
         response = requests.post(f"{SERVER_URL}/update?port={port}", files=files)
         if response.status_code == 200:
             print(f"Device {port} updated")
