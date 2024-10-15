@@ -54,7 +54,7 @@ class MeshCatProcessRunner:
         ports = [port for port in ports if port["pio_env"] is not None]
         for port in ports:
             is_running = any(port.device in ports_started for ports_started in app.ports_running)
-            is_flashing = any(port.device in ports_flashing for ports_flashing in app.ports_flashing)
+            is_flashing = port.device in app.ports_flashing
             remote_serial_port = port["port"].device
             if is_flashing:
                 port["state"] = "flashing"
@@ -99,7 +99,7 @@ def flash_device(port: str, upload_file: UploadFile = File(...)):
     elif found_device.get("arch") == "esp32":
         update_firmware_esp32(port, firmware_path)
     # Remove the port from the flashing list
-    app.ports_flashing = [port_flashing for port_flashing in app.ports_flashing if port not in app.ports_flashing]
+    app.ports_flashing.remove(port)
     return { "message": "Flashing device" }
 
 @app.post("/stop")
