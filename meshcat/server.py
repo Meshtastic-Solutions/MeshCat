@@ -1,14 +1,16 @@
 import asyncio
 from contextlib import asynccontextmanager
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 import serial
 import serial.tools.list_ports
-from .utils import get_devices_from_json, enter_dfu_mode
+
+from meshcat.flash import update_firmware_esp32, update_firmware_nrf52840
+from .utils import get_devices_from_json, enter_dfu_mode, write_temp_file
 from .socat import start_socat_server, stop_socat
 
-# Assuming ports_started is a global variable or needs to be defined
-ports_started = []
+ports_running = []
+ports_flashing = []
 
 devices_from_json = get_devices_from_json()
 
@@ -37,22 +39,28 @@ class MeshCatProcessRunner:
                 "pio_env": find_device(port.vid, port.pid, port.manufacturer).get("pio_env"),
                 "arch": find_device(port.vid, port.pid, port.manufacturer).get("arch"),
                 "requires_dfu": find_device(port.vid, port.pid, port.manufacturer).get("requires_dfu"),
-                "is_running": any(port.device in port_started for port_started in ports_started),
-                "tcp_port": next((tcp_port for port_started in ports_started if port.device in port_started for tcp_port in port_started.values()), None),
+                "state": "stopped",
+                "tcp_port": next((tcp_port for port_started in ports_running if port.device in port_started for tcp_port in port_started.values()), None),
                 "port": port
             }, serial.tools.list_ports.comports()))
         ports = [port for port in ports if port["pio_env"] is not None]
         for port in ports:
+            is_running = any(port.device in port_started for port_started in ports_running)
+            is_flashing = any(port.device in ports_flashing for ports_flashing in ports_flashing)
             remote_serial_port = port["port"].device
-            if any(remote_serial_port in port_started for port_started in ports_started):
+            if is_flashing:
+                port["state"] = "flashing"
+                continue
+            elif is_running:
+                port["state"] = "running"
                 continue
 
             tcp_port = start_socat_server(remote_serial_port)
-            ports_started.append({remote_serial_port: tcp_port})
+            ports_running.append({remote_serial_port: tcp_port})
             # Update the port with the new tcp_port and set is_running to True
             port["tcp_port"] = tcp_port
             port["virtual_port"] = f"/dev/meshcat{tcp_port}"
-            port["is_running"] = True
+            port["state"] = "running"
         return ports
 
 runner = MeshCatProcessRunner()
@@ -76,15 +84,29 @@ def get_serial_ports_raw():
 
 # Probably should deprecated this endpoint
 @app.post("/connect")
-def start_connect(port):
+def start_connect(port: str):
     tcp_port = start_socat_server(port)
-    ports_started.append({port: tcp_port})
+    ports_running.append({port: tcp_port})
     return { "message": "Device started", "tcp_port": tcp_port }
 
+@app.post("/flash")
+def flash_device(port: str, firmware_file: UploadFile = File(...)):
+    device = find_device(port.vid, port.pid, port.manufacturer)
+    ports_flashing.append(port)
+    firmware_path = f"/tmp/{firmware_file.filename}"
+    write_temp_file(firmware_file.file.read(), firmware_path)
+    if device.get("arch") == "nrf52840":
+        update_firmware_nrf52840(port.device, firmware_path)
+    elif device.get("arch") == "esp32":
+        update_firmware_esp32(port.device, firmware_path)
+    # Remove the port from the flashing list
+    ports_flashing = [port_started for port_started in ports_flashing if port not in port_started]
+    return { "message": "Flashing device" }
+
 @app.post("/stop")
-def stop_connection(port):
-    stop_socat(port)
-    ports_started = [port_started for port_started in ports_started if port not in port_started]
+def stop_connection(port: str):
+    stop_socat(port, ports_running=ports_running)
+    ports_running = [port_started for port_started in ports_running if port not in port_started]
     return { "message": "Device stopped" }
 
 @app.post("/dfu")

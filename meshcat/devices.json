@@ -5,7 +5,7 @@
         "requires_dfu": true,
         "manufacturer": ["rakwireless", "microsoft"],
         "vid": [9114],
-        "pid": [32809, 42]
+        "pid": [32809]
     },
     {
         "pio_env": "heltec_v3",

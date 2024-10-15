@@ -27,8 +27,8 @@ def start_socat_client(host, tcp_port):
 def stop_socat():
     subprocess.Popen(["kill", "-9", "socat"])
 
-def stop_socat(port, ports_started):
-    for port_started in ports_started:
+def stop_socat(port, ports_running):
+    for port_started in ports_running:
         if port in port_started:
             subprocess.Popen(["kill", "-9", "socat", str(port_started)])
-            ports_started.remove(port_started)
+            ports_running.remove(port_started)

@@ -19,7 +19,9 @@ meshtastic = "^2.5.1"
 colorama = "^0.4.6"
 uvicorn = "^0.31.1"
 typer = "^0.12.5"
-
+esptool = "^4.8.1"
+adafruit-nrfutil = "^0.5.3.post16"
+python-multipart = "^0.0.12"
 
 [build-system]
 requires = ["poetry-core"]

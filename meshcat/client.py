@@ -38,6 +38,17 @@ def connect(port: str):
     return { "message": f"Could not find running device {port}" }
 
 @app.command()
+def update(port: str, firmware_path: str):
+    with open(firmware_path, 'rb') as firmware_file:
+        files = {'firmware': firmware_file}
+        response = requests.post(f"{SERVER_URL}/update?port={port}", files=files)
+        if response.status_code == 200:
+            print(f"Device {port} updated")
+            print(json.dumps(response.json(), indent=2))
+
+    return { "message": f"Could not find running device {port}" }
+
+@app.command()
 def dfu(port: str):
     response = requests.post(f"{SERVER_URL}/dfu?port={port}")
     if response.status_code == 200:

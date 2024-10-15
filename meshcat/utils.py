@@ -4,8 +4,6 @@ import time
 
 import serial
 
-ports_started = []
-
 def get_devices_from_json():
     json_file_path = os.path.join(os.path.dirname(__file__), 'devices.json')
     if os.path.exists(json_file_path):
@@ -23,3 +21,8 @@ def enter_dfu_mode(port):
     except serial.SerialException as e:
         print(f"Error: {e}")
         return False
+
+def write_temp_file(data, filename: str):
+    with open(filename, 'wb') as file:
+        file.write(data)
+    return filename
