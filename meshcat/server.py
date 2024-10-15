@@ -54,7 +54,7 @@ class MeshCatProcessRunner:
         ports = [port for port in ports if port["pio_env"] is not None]
         for port in ports:
             is_running = any(port.device in ports_started for ports_started in app.ports_running)
-            is_flashing = port.device in app.ports_flashing
+            is_flashing = port["port"].device in app.ports_flashing
             remote_serial_port = port["port"].device
             if is_flashing:
                 port["state"] = "flashing"
