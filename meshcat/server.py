@@ -90,11 +90,11 @@ def start_connect(port: str):
     return { "message": "Device started", "tcp_port": tcp_port }
 
 @app.post("/update")
-def flash_device(port: str, firmware_file: UploadFile = File(...)):
+def flash_device(port: str, upload_file: UploadFile = File(...)):
     device = find_device(port.vid, port.pid, port.manufacturer)
     ports_flashing.append(port)
-    firmware_path = f"/tmp/{firmware_file.filename}"
-    write_temp_file(firmware_file.file.read(), firmware_path)
+    firmware_path = f"/tmp/{upload_file.filename}"
+    write_temp_file(upload_file.file.read(), firmware_path)
     if device.get("arch") == "nrf52840":
         update_firmware_nrf52840(port.device, firmware_path)
     elif device.get("arch") == "esp32":
