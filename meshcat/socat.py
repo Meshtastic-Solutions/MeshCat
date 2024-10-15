@@ -24,7 +24,7 @@ def start_socat_client(host, tcp_port):
     print(f"stderr: {stderr.decode()}")
     pass
 
-def stop_socat():
+def stop_socat_all():
     subprocess.Popen(["kill", "-9", "socat"])
 
 def stop_socat(port, ports_running):

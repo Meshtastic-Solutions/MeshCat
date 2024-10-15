@@ -7,7 +7,7 @@ import serial.tools.list_ports
 
 from meshcat.flash import update_firmware_esp32, update_firmware_nrf52840
 from .utils import get_devices_from_json, enter_dfu_mode, write_temp_file
-from .socat import start_socat_server, stop_socat
+from .socat import start_socat_server, stop_socat, stop_socat_all
 
 ports_running = []
 ports_flashing = []
@@ -70,7 +70,7 @@ async def lifespan(app: FastAPI):
     task = asyncio.create_task(runner.run_main())
     yield
     task.cancel()
-    stop_socat()
+    stop_socat_all()
 
 app = FastAPI(lifespan=lifespan)
 

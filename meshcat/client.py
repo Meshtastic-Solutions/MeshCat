@@ -2,7 +2,7 @@ import json
 import os
 import typer
 import requests
-from .socat import start_socat_client, stop_socat
+from .socat import start_socat_client, stop_socat_all
 
 app = typer.Typer()
 
@@ -61,7 +61,7 @@ def dfu(port: str):
 def stop(port: str):
     response = requests.post(f"{SERVER_URL}/stop?port={port}")
     if response.status_code == 200:
-        stop_socat()
+        stop_socat_all()
         print(f"Device stopped on port {port}")
         print(json.dumps(response.json(), indent=2))
     else:
