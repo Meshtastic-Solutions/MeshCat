@@ -9,8 +9,16 @@ from meshcat.flash import update_firmware_esp32, update_firmware_nrf52840
 from .utils import get_devices_from_json, enter_dfu_mode, write_temp_file
 from .socat import start_socat_server, stop_socat, stop_socat_all
 
-ports_running = []
-ports_flashing = []
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    task = asyncio.create_task(runner.run_main())
+    yield
+    task.cancel()
+    stop_socat_all()
+    
+app = FastAPI(lifespan=lifespan)
+app.ports_flashing = []
+app.ports_running = []
 
 devices_from_json = get_devices_from_json()
 
@@ -65,17 +73,6 @@ class MeshCatProcessRunner:
 
 runner = MeshCatProcessRunner()
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    task = asyncio.create_task(runner.run_main())
-    yield
-    task.cancel()
-    stop_socat_all()
-
-app = FastAPI(lifespan=lifespan)
-app.ports_flashing = []
-app.ports_running = []
-
 @app.get("/")
 def get_device_list():
     return runner.value
@@ -88,7 +85,7 @@ def get_serial_ports_raw():
 @app.post("/connect")
 def start_connect(port: str):
     tcp_port = start_socat_server(port)
-    ports_running.append({port: tcp_port})
+    app.ports_running.append({port: tcp_port})
     return { "message": "Device started", "tcp_port": tcp_port }
 
 @app.post("/update")
@@ -108,8 +105,8 @@ def flash_device(port: str, upload_file: UploadFile = File(...)):
 
 @app.post("/stop")
 def stop_connection(port: str):
-    stop_socat(port, ports_running=ports_running)
-    ports_running = [port_started for port_started in app.ports_running if port not in app.ports_running]
+    stop_socat(port, ports_running=app.ports_running)
+    app.ports_running = [port_started for port_started in app.ports_running if port not in app.ports_running]
     return { "message": "Device stopped" }
 
 @app.post("/dfu")
