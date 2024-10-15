@@ -15,7 +15,7 @@ async def lifespan(app: FastAPI):
     yield
     task.cancel()
     stop_socat_all()
-    
+
 app = FastAPI(lifespan=lifespan)
 app.ports_flashing = []
 app.ports_running = []
@@ -48,7 +48,7 @@ class MeshCatProcessRunner:
                 "arch": find_device(port.vid, port.pid, port.manufacturer).get("arch"),
                 "requires_dfu": find_device(port.vid, port.pid, port.manufacturer).get("requires_dfu"),
                 "state": "stopped",
-                "tcp_port": next((tcp_port for port_started in ports_running if port.device in port_started for tcp_port in port_started.values()), None),
+                "tcp_port": next((tcp_port for port_started in app.ports_running if port.device in port_started for tcp_port in port_started.values()), None),
                 "port": port
             }, serial.tools.list_ports.comports()))
         ports = [port for port in ports if port["pio_env"] is not None]
