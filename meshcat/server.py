@@ -45,8 +45,8 @@ class MeshCatProcessRunner:
             }, serial.tools.list_ports.comports()))
         ports = [port for port in ports if port["pio_env"] is not None]
         for port in ports:
-            is_running = any(port.device in port_started for port_started in ports_running)
-            is_flashing = any(port.device in ports_flashing for ports_flashing in ports_flashing)
+            is_running = any(port.device in ports_started for ports_started in app.ports_running)
+            is_flashing = any(port.device in ports_flashing for ports_flashing in app.ports_flashing)
             remote_serial_port = port["port"].device
             if is_flashing:
                 port["state"] = "flashing"
@@ -56,7 +56,7 @@ class MeshCatProcessRunner:
                 continue
 
             tcp_port = start_socat_server(remote_serial_port)
-            ports_running.append({remote_serial_port: tcp_port})
+            app.ports_running.append({remote_serial_port: tcp_port})
             # Update the port with the new tcp_port and set is_running to True
             port["tcp_port"] = tcp_port
             port["virtual_port"] = f"/dev/meshcat{tcp_port}"
@@ -73,6 +73,8 @@ async def lifespan(app: FastAPI):
     stop_socat_all()
 
 app = FastAPI(lifespan=lifespan)
+app.ports_flashing = []
+app.ports_running = []
 
 @app.get("/")
 def get_device_list():
@@ -93,7 +95,7 @@ def start_connect(port: str):
 def flash_device(port: str, upload_file: UploadFile = File(...)):
     ports = runner.value
     found_device = next((port for port in ports if port["port"].device == port), None)
-    ports_flashing.append(port)
+    app.ports_flashing.append(port)
     firmware_path = f"/tmp/{upload_file.filename}"
     write_temp_file(upload_file.file.read(), firmware_path)
     if found_device.get("arch") == "nrf52840":
@@ -101,13 +103,13 @@ def flash_device(port: str, upload_file: UploadFile = File(...)):
     elif found_device.get("arch") == "esp32":
         update_firmware_esp32(port.device, firmware_path)
     # Remove the port from the flashing list
-    ports_flashing = [port_flashing for port_flashing in ports_flashing if port not in ports_flashing]
+    app.ports_flashing = [port_flashing for port_flashing in app.ports_flashing if port not in app.ports_flashing]
     return { "message": "Flashing device" }
 
 @app.post("/stop")
 def stop_connection(port: str):
     stop_socat(port, ports_running=ports_running)
-    ports_running = [port_started for port_started in ports_running if port not in ports_running]
+    ports_running = [port_started for port_started in app.ports_running if port not in app.ports_running]
     return { "message": "Device stopped" }
 
 @app.post("/dfu")
