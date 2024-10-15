@@ -101,13 +101,13 @@ def flash_device(port: str, upload_file: UploadFile = File(...)):
     elif found_device.get("arch") == "esp32":
         update_firmware_esp32(port.device, firmware_path)
     # Remove the port from the flashing list
-    ports_flashing = [port_started for port_started in ports_flashing if port not in port_started]
+    ports_flashing = [port_flashing for port_flashing in ports_flashing if port not in ports_flashing]
     return { "message": "Flashing device" }
 
 @app.post("/stop")
 def stop_connection(port: str):
     stop_socat(port, ports_running=ports_running)
-    ports_running = [port_started for port_started in ports_running if port not in port_started]
+    ports_running = [port_started for port_started in ports_running if port not in ports_running]
     return { "message": "Device stopped" }
 
 @app.post("/dfu")
