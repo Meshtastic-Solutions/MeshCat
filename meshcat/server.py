@@ -61,6 +61,7 @@ class MeshCatProcessRunner:
                 continue
             elif is_running:
                 port["state"] = "running"
+                port["virtual_port"] = f"/tmp/meshcat{port['tcp_port']}"
                 continue
 
             tcp_port = start_socat_server(remote_serial_port)
