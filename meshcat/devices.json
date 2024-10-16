@@ -1,7 +1,7 @@
 [
     {
         "pio_env": "rak4631",
-        "arch": "nrf52",
+        "arch": "nrf52840",
         "requires_dfu": true,
         "manufacturer": ["rakwireless", "microsoft"],
         "vid": [9114],
