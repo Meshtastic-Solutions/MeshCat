@@ -67,7 +67,7 @@ class MeshCatProcessRunner:
             app.ports_running.append({remote_serial_port: tcp_port})
             # Update the port with the new tcp_port and set is_running to True
             port["tcp_port"] = tcp_port
-            port["virtual_port"] = f"/dev/meshcat{tcp_port}"
+            port["virtual_port"] = f"/tmp/meshcat{tcp_port}"
             port["state"] = "running"
         return ports
 
@@ -92,6 +92,7 @@ def start_connect(port: str):
 def flash_device(port: str, upload_file: UploadFile = File(...)):
     found_device = next((p for p in runner.value if p["port"].device == port), None)
     app.ports_flashing.append(port)
+    print(f"Flashing device {port}")
     firmware_path = f"/tmp/{upload_file.filename}"
     write_temp_file(upload_file.file.read(), firmware_path)
     if found_device.get("arch") == "nrf52840":

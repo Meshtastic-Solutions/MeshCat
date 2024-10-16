@@ -17,8 +17,8 @@ def start_socat_server(port):
     return tcp_port
 
 def start_socat_client(host, tcp_port):
-    process = subprocess.Popen(["socat", f"tcp:{host}:{tcp_port}", f"pty,link=/dev/meshcat{tcp_port},raw,echo=0,group-late=dialout,mode=777"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print(f"Started: socat tcp:{host}:{tcp_port} pty,link=/dev/meshcat{tcp_port},raw,group-late=dialout,mode=777")
+    process = subprocess.Popen(["socat", f"tcp:{host}:{tcp_port}", f"pty,link=/tmp/meshcat{tcp_port},raw,echo=0,group-late=dialout,mode=777"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    print(f"Started: socat tcp:{host}:{tcp_port} pty,link=/tmp/meshcat{tcp_port},raw,group-late=dialout,mode=777")
     stdout, stderr = process.communicate()
     print(f"stdout: {stdout.decode()}")
     print(f"stderr: {stderr.decode()}")
