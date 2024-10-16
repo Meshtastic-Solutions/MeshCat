@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "meshcatstic"
-version = "0.1.0"
+version = "0.1.1"
 description = "Meshtastic serial device discovery gateway service and client built around socat and other tooling"
 authors = ["Ben Meadors <benmmeadors@gmail.com>"]
 license = "GNU GPLv3"
