@@ -7,8 +7,10 @@ Meshtastic serial device discovery gateway service and cli client built around `
 ## Requirements
 
 - Posix environment (tested with Ubunutu)
-- Python 3.10+ and Poetry
+- Python 3.10+ and Poetry (for development)
 - socat (`sudo apt install socat`)
+- Uvicorn server (comes with pypi installation or poetry install)
+- `pipx install meshcatstic`
 
 ## Running for development
 
@@ -38,9 +40,12 @@ Meshtastic serial device discovery gateway service and cli client built around `
 - To update (flash) a remote device on the service, `poetry run meshcat flash /dev/ttymythang firmware-mythang-update.bin`
 
 
-## Running as agent in production
+## Running
 
-TODO...
+After pip installing `meshcatstic`, you can run both the server and client.
+
+To run the server using uvicorn: `uvicorn meshcatstic:app`
+To run the client: `meshcat ... command`
 
 ## Future features
 
