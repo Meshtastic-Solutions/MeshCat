@@ -11,6 +11,8 @@ jobs:
         uses: JRubics/poetry-publish@v2.0
         with:
           pypi_token: ${{ secrets.PYPI_TOKEN }}
+      - name: Install poetry
+        run: curl -sSL https://install.python-poetry.org | python3 -
       - name: Increment patch version
         run: poetry version patch
       - name: Commit and push changes
