@@ -9,7 +9,7 @@ def update_firmware_esp32(port: str, firmware_path):
 
 def update_firmware_nrf52840(port: str, firmware_path):
     """Program a device with bootloader that support serial DFU"""
-    serial_backend = DfuTransportSerial(port, 115200, touch=True)
+    serial_backend = DfuTransportSerial(port, 115200, touch=1200)
     #serial_backend.register_events_callback(DfuEvent.PROGRESS_EVENT, update_progress)
     
     dfu = Dfu(firmware_path, dfu_transport=serial_backend)
