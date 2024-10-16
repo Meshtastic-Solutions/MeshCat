@@ -1,12 +1,13 @@
 import asyncio
 from contextlib import asynccontextmanager
+from fastapi.responses import StreamingResponse
 import uvicorn
 from fastapi import FastAPI, File, UploadFile
 import serial
 import serial.tools.list_ports
 
 from meshcat.flash import update_firmware_esp32, update_firmware_nrf52840
-from .utils import get_devices_from_json, enter_dfu_mode, write_temp_file
+from .utils import get_devices_from_json, enter_dfu_mode, print_mesh_cat, write_temp_file
 from .socat import start_socat_server, stop_socat, stop_socat_all
 
 @asynccontextmanager
@@ -103,6 +104,7 @@ def flash_device(port: str, upload_file: UploadFile = File(...)):
     # Remove the port from the flashing list
     app.ports_flashing.remove(port)
     return { "message": "Flashing device" }
+# StreamingResponse(fake_json_streamer(), media_type='text/event-stream')
 
 @app.post("/stop")
 def stop_connection(port: str):
@@ -117,4 +119,5 @@ def dfu(port):
 
 def start():
     """Launched with `poetry run start` at root directory"""
+    print_mesh_cat()
     uvicorn.run("meshcat.server:app", host="0.0.0.0", port=6900, reload=True)
