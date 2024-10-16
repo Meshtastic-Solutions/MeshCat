@@ -6,7 +6,7 @@ from fastapi import FastAPI, File, UploadFile
 import serial
 import serial.tools.list_ports
 
-from meshcat.flash import update_firmware_esp32, update_firmware_nrf52840
+from meshcatstic.flash import update_firmware_esp32, update_firmware_nrf52840
 from .utils import get_devices_from_json, enter_dfu_mode, print_mesh_cat, write_temp_file
 from .socat import start_socat_server, stop_socat, stop_socat_all
 
@@ -120,4 +120,4 @@ def dfu(port):
 def start():
     """Launched with `poetry run start` at root directory"""
     print_mesh_cat()
-    uvicorn.run("meshcat.server:app", host="0.0.0.0", port=6900, reload=True)
+    uvicorn.run("meshcatstic.server:app", host="0.0.0.0", port=6900, reload=True)

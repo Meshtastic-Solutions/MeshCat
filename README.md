@@ -1,4 +1,4 @@
-# MeshCat
+# MeshCat (Meshcatstic)
 
 Meshtastic serial device discovery gateway service and cli client built around `socat` and other tooling
 
