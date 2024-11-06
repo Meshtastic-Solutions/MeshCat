@@ -1,14 +1,13 @@
 [tool.poetry]
 name = "meshcatstic"
-version = "0.1.2"
-description = "Meshtastic serial device discovery gateway service and client built around socat and other tooling"
+version = "0.1.3"
+description = "Meshtastic serial device discovery gateway service and client built around socat plus other tooling"
 authors = ["Ben Meadors <benmmeadors@gmail.com>"]
 license = "GNU GPLv3"
 readme = "README.md"
 
 [tool.poetry.scripts]
-start = "meshcatstic.server:start"
-server = "meshcatstic.server:start"
+meshcat-server = "meshcatstic.server:start"
 meshcat = "meshcatstic.client:app"
 
 [tool.poetry.dependencies]
